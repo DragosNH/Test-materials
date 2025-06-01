@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { dispersion } from 'three/tsl';
 
 // ------ Scene ------
 const scene = new THREE.Scene();
@@ -14,17 +15,23 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls( camera, renderer.domElement );
 
+// ------ Light ------
+// --- Ambient light ---
+const softLight = new THREE.AmbientLight( 0xffffff );
+scene.add( softLight );
+// --- Hemisphere light ---
+const hemisphereLight = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+scene.add( hemisphereLight );
+
 // ------ Objects ------
-const geometry = new THREE.BoxGeometry(5,5,5);
-const materials = [
-  new THREE.MeshBasicMaterial({color: 0xff0000}),
-  new THREE.MeshBasicMaterial({color: 0x0000ff}),
-  new THREE.MeshBasicMaterial({color: 0x00ff00}),
-  new THREE.MeshBasicMaterial({color: 0xff00ff}),
-  new THREE.MeshBasicMaterial({color: 0x00ffff}),
-  new THREE.MeshBasicMaterial({color: 0xffff00})
-];
-const cube = new THREE.Mesh(geometry, materials);
+const geometry = new THREE.BoxGeometry(3,3,3);
+const material = new THREE.MeshPhysicalMaterial(
+    {color: 0xff0000},
+    {dispersion: 0.5},
+    {ior: 2},
+    {reflectivity: 1}
+);
+const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
 
 
